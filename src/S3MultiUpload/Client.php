@@ -34,7 +34,7 @@ class Client {
 		return $multipart_id;
 	}
 
-	public function signMultipart($multipart_id, $chunk, $chunksize, $headers = array()) {
+	public function signMultipart($multipart_id, $chunk, $headers = array()) {
 
 		if (!list($bucket,$key) = $this->key_storage->get($multipart_id)) {
 			throw new KeyNotFoundException('There is no upload in progress for key "' . $multipart_id . '"');
@@ -46,12 +46,11 @@ class Client {
 			'UploadId' => $multipart_id,
 			'Body' => '',
 			'PartNumber' => (string) $chunk + 1,
-			'ContentLength' => $chunksize,
 			'command.headers' => $headers
 		));
 
 		return array(
-			'url' => $command->createPresignedUrl('+10 minutes'),
+			'url' => $command->createPresignedUrl('+10 minutes'), // The data can simply be "PUT" at this url directly
 			'uploadId' => $multipart_id,
 			'key' => $key,
 			'bucket' => $bucket

@@ -15,7 +15,7 @@ $s3Client = \Aws\Common\Aws::factory(array(
 	'region' => $config['region']
 ))->get('s3');
 
-$s3 = new S3MultiUpload\Client($s3Client, new S3MultiUpload\KeyStorage);
+$s3 = new S3MultiUpload\Client($s3Client, new S3MultiUpload\KeyStorage\NativeSession);
 
 switch ($_REQUEST['action']) {
 	
