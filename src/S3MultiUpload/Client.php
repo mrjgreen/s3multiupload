@@ -1,17 +1,24 @@
 <?php namespace S3MultiUpload;
 
+use Aws\S3\S3Client;
+use Aws\S3\Enum\CannedAcl;
+
+use S3MultiUpload\KeyStorage\KeyStorageInterface;
+
+use S3MultiUpload\KeyStorage\Exception\KeyNotFoundException;
+
 class Client {
 
 	public $s3;
 	
 	public $key_storage;
 	
-	public function __construct(Aws\S3\S3Client $s3, KeyStorageInterface $key_storage){
+	public function __construct(S3Client $s3, KeyStorageInterface $key_storage){
 		$this->s3 = $s3;
 		$this->key_storage = $key_storage;
 	}
 	
-	public function createMultipart($bucket, $key, $acl = \Aws\S3\Enum\CannedAcl::AUTHENTICATED_READ) {
+	public function createMultipart($bucket, $key, $acl = CannedAcl::AUTHENTICATED_READ) {
 		
 		$response = $this->s3->createMultipartUpload(array(
 			'Bucket' => $bucket,
@@ -30,7 +37,7 @@ class Client {
 	public function signMultipart($multipart_id, $chunk, $chunksize, $headers = array()) {
 
 		if (!list($bucket,$key) = $this->key_storage->get($multipart_id)) {
-			throw new S3KeyStorageKeyNotFoundException('There is no upload in progress for key "' . $multipart_id . '"');
+			throw new KeyNotFoundException('There is no upload in progress for key "' . $multipart_id . '"');
 		}
 
 		$command = $this->s3->getCommand('UploadPart', array(
@@ -63,7 +70,7 @@ class Client {
 	public function completeMultipart($multipart_id) {
 
 		if(!list($bucket,$key) = $this->key_storage->get($multipart_id)){
-			throw new S3KeyStorageKeyNotFoundException('There is no upload in progress for key "' . $multipart_id . '"');
+			throw new KeyNotFoundException('There is no upload in progress for key "' . $multipart_id . '"');
 		}
 		
 		$parts = $this->listParts(array(
@@ -96,7 +103,7 @@ class Client {
 	public function abortMultipartUpload($multipart_id) {
 		
 		if(!list($bucket,$key) = $this->key_storage->get($multipart_id)){
-			throw new S3KeyStorageKeyNotFoundException('There is no upload in progress for key "' . $multipart_id . '"');
+			throw new KeyNotFoundException('There is no upload in progress for key "' . $multipart_id . '"');
 		}
 		
 		$this->s3->abortMultipartUpload(array(

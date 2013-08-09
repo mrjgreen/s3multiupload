@@ -1,6 +1,4 @@
-<?php namespace S3MultiUpload;
-
-class S3KeyStorageKeyNotFoundException extends Exception{}
+<?php namespace S3MultiUpload\KeyStorage;
 
 interface KeyStorageInterface {
 	
