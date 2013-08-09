@@ -2,6 +2,9 @@
 	"name": "joegreen0991/s3multiupload",
 	"description": "A class for uploading direct to s3 with chunked uploads",
 	"keywords": ["s3", "upload", "chunked", "direct"],
+	"require": {
+		"aws/aws-sdk-php": "*"
+	},
 	"autoload": {
 		"psr-0" : {
 			"S3MultiUpload" : "/src"
