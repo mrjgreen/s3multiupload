@@ -2,7 +2,7 @@ s3multiupload
 =============
 
 
-Full example for uploading directly to https://github.com/joegreen0991/chunkedPluploadToS3Example
+Full example for uploading directly to Amazon S3 with plupload and chunked uploads https://github.com/joegreen0991/chunkedPluploadToS3Example
 
     // We need to give our class an instance of the S3Client
     $s3Client = \Aws\Common\Aws::factory(array(
