@@ -3,7 +3,7 @@ s3multiupload
 
 
 Full example for uploading directly to Amazon S3 with plupload and chunked uploads https://github.com/joegreen0991/chunkedPluploadToS3Example
-
+```php
     // We need to give our class an instance of the S3Client
     $s3Client = \Aws\Common\Aws::factory(array(
       'key'    => S3_KEY,
@@ -41,3 +41,4 @@ Full example for uploading directly to Amazon S3 with plupload and chunked uploa
     		die(json_encode($s3->completeMultipart($_REQUEST['uploadId'])));
     
     }
+```
