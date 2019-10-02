@@ -1,27 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace S3MultiUpload;
 
 use Aws\S3\S3Client;
+use Guzzle\Service\Resource\Model;
 use S3MultiUpload\KeyStorage\KeyStorageInterface;
 use S3MultiUpload\KeyStorage\Exception\KeyNotFoundException;
 
 class Client
 {
-    /**
-     * @var Aws\S3\S3Client
-     */
+    /** @var S3Client */
     public $s3;
 
-    /**
-     * @var S3MultiUpload\KeyStorage\KeyStorageInterface
-     */
+    /** @var KeyStorageInterface */
     public $key_storage;
 
     public function __construct(S3Client $s3, KeyStorageInterface $key_storage)
     {
         $this->s3 = $s3;
-
         $this->key_storage = $key_storage;
     }
 
@@ -34,7 +32,7 @@ class Client
      *
      * @return string
      */
-    public function createMultipart($bucket, $key, array $options = [])
+    public function createMultipart(string $bucket, string $key, array $options = []): string
     {
         $response = $this->s3->createMultipartUpload($options + [
             'Bucket' => $bucket,
@@ -57,7 +55,7 @@ class Client
      *
      * @throws KeyNotFoundException
      */
-    public function signMultipart($multipart_id, $chunk, array $headers = [])
+    public function signMultipart(string $multipart_id, int $chunk, array $headers = []): array
     {
         if (!list($bucket, $key) = $this->key_storage->get($multipart_id)) {
             throw new KeyNotFoundException('There is no upload in progress for key "'.$multipart_id.'"');
@@ -68,7 +66,7 @@ class Client
             'Key' => $key,
             'UploadId' => $multipart_id,
             'Body' => '',
-            'PartNumber' => (string) $chunk + 1,
+            'PartNumber' => $chunk + 1,
             'command.headers' => $headers,
         ]);
 
@@ -87,7 +85,7 @@ class Client
      *
      * @return array
      */
-    private function listParts($fileoptions)
+    private function listParts(array $fileoptions): ?array
     {
         $parts = $this->s3->listParts($fileoptions);
 
@@ -104,7 +102,7 @@ class Client
      * @throws KeyNotFoundException
      * @throws \S3MultiUpload\Exception
      */
-    public function completeMultipart($multipart_id)
+    public function completeMultipart(string $multipart_id): Model
     {
         if (!list($bucket, $key) = $this->key_storage->get($multipart_id)) {
             throw new KeyNotFoundException('There is no upload in progress for key "'.$multipart_id.'"');
@@ -139,7 +137,7 @@ class Client
      *
      * @throws KeyNotFoundException
      */
-    public function abortMultipartUpload($multipart_id)
+    public function abortMultipartUpload(string $multipart_id): void
     {
         if (!list($bucket, $key) = $this->key_storage->get($multipart_id)) {
             throw new KeyNotFoundException('There is no upload in progress for key "'.$multipart_id.'"');
@@ -151,6 +149,6 @@ class Client
             'UploadId' => $multipart_id,
         ]);
 
-        $this->key_storage->forget($multipart_id);
+        $this->key_storage->delete($multipart_id);
     }
 }

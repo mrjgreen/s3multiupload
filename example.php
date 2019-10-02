@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 include 'vendor/autoload.php';
 
@@ -27,7 +28,7 @@ switch ($_REQUEST['action']) {
 
         // We need to set the content type as this header is used to form the signed request - we have to make sure that whatever we send with the data matches this
         // This should always be 'application/octet-stream' for chunked uploads with plupload
-        echo json_encode($s3->signMultipart($multipart_id, $_REQUEST['chunk'], [
+        echo json_encode($s3->signMultipart($multipart_id, (int)$_REQUEST['chunk'], [
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => $_REQUEST['size'],
         ]));
