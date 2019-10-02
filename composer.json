@@ -7,7 +7,7 @@
 	},
 	"autoload": {
 		"psr-0" : {
-			"S3MultiUpload" : "/src"
+			"S3MultiUpload" : "src/"
 		}
 	},
 	"config": {
