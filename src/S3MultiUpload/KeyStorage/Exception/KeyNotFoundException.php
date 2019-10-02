@@ -1,5 +1,7 @@
-<?php namespace S3MultiUpload\KeyStorage\Exception;
+<?php
 
-class KeyNotFoundException extends \Exception {
-	
+namespace S3MultiUpload\KeyStorage\Exception;
+
+class KeyNotFoundException extends \Exception
+{
 }
