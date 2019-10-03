@@ -43,6 +43,10 @@ class Client
 
         $multipart_id = $response->get('UploadId');
 
+        if (!is_string($multipart_id) || !$multipart_id === '') {
+            throw new CouldNotCreateMultipartUploadException('Could not get UploadId from S3 response');
+        }
+
         $this->key_storage->put($multipart_id, [$bucket, $key]);
 
         return $multipart_id;
