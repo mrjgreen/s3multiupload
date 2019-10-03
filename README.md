@@ -5,11 +5,14 @@ s3multiupload
 Full example for uploading directly to Amazon S3 with plupload and chunked uploads https://github.com/joegreen0991/chunkedPluploadToS3Example
 ```php
     // We need to give our class an instance of the S3Client
-    $s3Client = \Aws\Common\Aws::factory(array(
-      'key'    => S3_KEY,
-    	'secret' => S3_SECRET,
-    	'region' => S3_REGION
-    ))->get('s3');
+    $s3Client = new Aws\S3\S3Client([
+        'credentials' => [
+            'key'    => S3_KEY,
+            'secret' => S3_SECRET,
+        ],
+        'region' => S3_REGION,
+        'version' => '2006-03-01',
+    ]);
     
     // We also need to pass in a storage handler, so we can remember the multipart_id between requests - use native sessions, or roll your own
     $keyStorage = new S3MultiUpload\KeyStorage\NativeSession;
@@ -19,25 +22,18 @@ Full example for uploading directly to Amazon S3 with plupload and chunked uploa
     
     
     switch ($_REQUEST['action']) {
-    
     	case 'sign' :
-    
     		if(empty($_REQUEST['uploadId'])){
     			// This is a new upload
-    
     			$filename = $_REQUEST['name']; // Using original file name, but you could use randomly generated names etc...
-    
     			$multipart_id = $s3->createMultipart(S3_BUCKET, $filename);
-    
     		}else{
-    
     			$multipart_id = $_REQUEST['uploadId'];
     		}
     
-    		die(json_encode($s3->signMultipart($multipart_id, $_REQUEST['chunk'], array('Content-Type' => 'application/octet-stream'))));
+    		die(json_encode($s3->signMultipart($multipart_id, (int)$_REQUEST['chunk'], ['Content-Type' => 'application/octet-stream']));
     
     	case 'complete' :
-    
     		die(json_encode($s3->completeMultipart($_REQUEST['uploadId'])));
     
     }
