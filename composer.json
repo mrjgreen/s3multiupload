@@ -3,7 +3,7 @@
 	"description": "A class for uploading direct to s3 with chunked uploads",
 	"keywords": ["s3", "upload", "chunked", "direct"],
 	"require": {
-		"aws/aws-sdk-php": "^2.8"
+		"aws/aws-sdk-php": "^3.112"
 	},
 	"autoload": {
 		"psr-0" : {

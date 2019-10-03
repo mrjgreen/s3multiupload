@@ -1,13 +1,13 @@
 <?php
-
 declare(strict_types=1);
 
 namespace S3MultiUpload;
 
+use Aws\Result;
 use Aws\S3\S3Client;
-use Guzzle\Service\Resource\Model;
-use S3MultiUpload\KeyStorage\KeyStorageInterface;
+use S3MultiUpload\KeyStorage\Exception\CouldNotCreateMultipartUploadException;
 use S3MultiUpload\KeyStorage\Exception\KeyNotFoundException;
+use S3MultiUpload\KeyStorage\KeyStorageInterface;
 
 class Client
 {
@@ -31,6 +31,8 @@ class Client
      * @param array  $options
      *
      * @return string
+     *
+     * @throws CouldNotCreateMultipartUploadException
      */
     public function createMultipart(string $bucket, string $key, array $options = []): string
     {
@@ -39,7 +41,7 @@ class Client
             'Key' => $key,
         ]);
 
-        $multipart_id = $response->getPath('UploadId');
+        $multipart_id = $response->get('UploadId');
 
         $this->key_storage->put($multipart_id, [$bucket, $key]);
 
@@ -70,8 +72,10 @@ class Client
             'command.headers' => $headers,
         ]);
 
+        $request = $this->s3->createPresignedRequest($command, '+10 minutes');
+
         return [
-            'url' => $command->createPresignedUrl('+10 minutes'),
+            'url' => (string)$request->getUri(),
             'uploadId' => $multipart_id,
         ];
     }
@@ -100,9 +104,9 @@ class Client
      * @return mixed The Amazon S3 response
      *
      * @throws KeyNotFoundException
-     * @throws \S3MultiUpload\Exception
+     * @throws \Exception
      */
-    public function completeMultipart(string $multipart_id): Model
+    public function completeMultipart(string $multipart_id): Result
     {
         if (!list($bucket, $key) = $this->key_storage->get($multipart_id)) {
             throw new KeyNotFoundException('There is no upload in progress for key "'.$multipart_id.'"');
