@@ -12,10 +12,10 @@ use S3MultiUpload\KeyStorage\KeyStorageInterface;
 class Client
 {
     /** @var S3Client */
-    public $s3;
+    private $s3;
 
     /** @var KeyStorageInterface */
-    public $key_storage;
+    private $key_storage;
 
     public function __construct(S3Client $s3, KeyStorageInterface $key_storage)
     {
