@@ -127,7 +127,9 @@ class Client
                 'Bucket' => $bucket,
                 'Key' => $key,
                 'UploadId' => $multipart_id,
-                'Parts' => $parts,
+                'MultipartUpload' => [
+                    'Parts' => $parts,
+                ],
             ]);
         } catch (\Exception $e) {
             $this->abortMultipartUpload($multipart_id);
