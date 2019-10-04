@@ -1,11 +1,13 @@
-<?php namespace S3MultiUpload\KeyStorage;
+<?php
+declare(strict_types=1);
 
-interface KeyStorageInterface {
-	
-	public function put($multipart_id, $data);
-	
-	public function delete($multipart_id);
-	
-	public function get($multipart_id);
-	
+namespace S3MultiUpload\KeyStorage;
+
+interface KeyStorageInterface
+{
+    public function put(string $multipart_id, array $data): void;
+
+    public function delete(string $multipart_id): void;
+
+    public function get(string $multipart_id): ?array;
 }
